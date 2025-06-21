@@ -3,6 +3,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:send_fcm/pages/license_grid_page.dart';
+
 class AddLicenseScreen extends StatefulWidget {
   @override
   _AddLicenseScreenState createState() => _AddLicenseScreenState();
@@ -21,7 +23,9 @@ class _AddLicenseScreenState extends State<AddLicenseScreen> {
       final fcmToken = await FirebaseMessaging.instance.getToken();
       final expiryDate = _selectedDate!.toIso8601String().split('T').first;
 
-      final uri = Uri.parse('http://192.168.1.15:3000/add-license'); // Replace with your server IP
+      final uri = Uri.parse(
+        'http://192.168.1.15:3000/add-license',
+      ); // Replace with your server IP
 
       final response = await http.post(
         uri,
@@ -36,12 +40,16 @@ class _AddLicenseScreenState extends State<AddLicenseScreen> {
       setState(() => _loading = false);
 
       if (response.statusCode == 201) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('✅ License added')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('✅ License added')));
         _nameController.clear();
         _selectedDate = null;
         setState(() {});
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('❌ Failed: ${response.body}')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('❌ Failed: ${response.body}')));
       }
     }
   }
@@ -80,9 +88,11 @@ class _AddLicenseScreenState extends State<AddLicenseScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: Text(_selectedDate == null
-                        ? 'No date selected'
-                        : 'Expiry Date: ${_selectedDate!.toLocal().toString().split(' ')[0]}'),
+                    child: Text(
+                      _selectedDate == null
+                          ? 'No date selected'
+                          : 'Expiry Date: ${_selectedDate!.toLocal().toString().split(' ')[0]}',
+                    ),
                   ),
                   ElevatedButton(
                     onPressed: _pickDate,
@@ -97,6 +107,15 @@ class _AddLicenseScreenState extends State<AddLicenseScreen> {
                       onPressed: _submitForm,
                       child: Text('Submit License'),
                     ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => LicenseGridPage()),
+                  );
+                },
+                child: Text('View All Licenses'),
+              ),
             ],
           ),
         ),
